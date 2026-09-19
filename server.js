@@ -29,6 +29,7 @@ app.post('/items', (req,res) => {
     const item = {id: items.length + 1, name: req.body.name};
 
     items.push(item);
+
     return res.status(201).json(item);
 });
 
@@ -36,6 +37,8 @@ app.put('/items/:id', (req,res) => {
     const i = Number(req.params.id);
     const target = items.find(item => item.id === i);
 
+
+    if(!target) return res.status(404).json({message: "item not found"});
     target.name = req.body.name;
 
     res.json(target);
@@ -47,6 +50,11 @@ app.delete('/items', (req,res) => {
     items.splice(index,1);
 
     return res.status(204).json(items);
+});
+
+app.use((err,req,res,next) => {
+    console.error(err.stack);
+    res.status(500).json({error : "Something went wrong!"});
 });
 
 app.listen(3000, () => {
